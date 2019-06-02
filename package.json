@@ -1,17 +1,20 @@
 {
-  "name": "react-skeleton",
+  "name": "timer-and-stopwatch",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.3.1",
     "react": "^16.8.6",
+    "react-bootstrap": "^1.0.0-beta.8",
     "react-dom": "^16.8.6",
+    "react-input-mask": "^2.0.4",
     "react-scripts": "3.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "coverage": "react-scripts test --coverage",
+    "test": "react-scripts test --env=jsdom",
+    "coverage": "react-scripts test --coverage --env=jsdom",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -30,9 +33,10 @@
     ]
   },
   "devDependencies": {
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.13.2",
     "prettier": "^1.17.1",
     "prop-types": "^15.7.2",
-    "react-test-renderer": "^16.8.6",
     "sinon": "^7.3.2"
   },
   "collectCoverageFrom": [
