@@ -5,10 +5,12 @@ export class Stopwatch extends React.Component {
     super(props)
 
     this.state = {
-      displayTime: "00:00:00",
-      timeInSeconds: 0,
-      countingUp: false
+      startTime: null,
+      running: false,
+      time: 0
     }
+
+    this.timer = null
 
     this.startStopwatch = this.startStopwatch.bind(this)
     this.stopStopwatch = this.stopStopwatch.bind(this)
@@ -19,54 +21,53 @@ export class Stopwatch extends React.Component {
   startStopwatch () {
     this.setState({
       ...this.state,
-      countingUp: true
+      startTime: this.state.startTime ? new Date(Date.now() - this.state.time) : Date.now(),
+      running: true
     })
   }
 
   countUp () {
-    setTimeout(() => {
-      if (this.state.countingUp) {
-        const newTimeInSeconds = this.state.timeInSeconds + 1
-
-        this.setState({
-          ...this.state,
-          timeInSeconds: newTimeInSeconds,
-          displayTime: this.createDisplayTime(newTimeInSeconds)
-        })
-      }
-    }, 1000)
+    this.timer = setTimeout(() => {
+      this.setState({
+        ...this.state,
+        time: Date.now() - this.state.startTime
+      })
+    }, 10)
   }
 
-  createDisplayTime (newTime) {
-    const newHours = Math.floor(newTime / 60 / 60)
-    const newMinutes = Math.floor((newTime - newHours * 60 * 60) / 60)
-    const newSeconds = Math.floor((newTime - newHours * 60 * 60 - newMinutes * 60))
+  createDisplayTime () {
+    const totalSeconds = this.state.time / 1000
 
-    const newDisplayTime =
-      newHours.toString().padStart(2, '0') + ':' +
-      newMinutes.toString().padStart(2, '0') + ':' +
-      newSeconds.toString().padStart(2, '0')
+    const hours = Math.floor(totalSeconds / 60 / 60)
+    const minutes = Math.floor((totalSeconds - hours * 60 * 60) / 60)
+    const seconds = Math.floor((totalSeconds - hours * 60 * 60 - minutes * 60))
+
+    const displayTime =
+      hours.toString().padStart(2, '0') + ':' +
+      minutes.toString().padStart(2, '0') + ':' +
+      seconds.toString().padStart(2, '0')
     
-    return newDisplayTime
+    return displayTime
   }
 
   stopStopwatch () {
     this.setState({
       ...this.state,
-      countingUp: false
+      running: false
     })
+    clearTimeout(this.timer)
   }
 
   clearStopwatch () {
     this.setState({
       ...this.state,
-      timeInSeconds: 0,
-      displayTime: "00:00:00"
+      startTime: null,
+      time: 0
     })
   }
 
   componentDidUpdate () {
-    if (this.state.countingUp) {
+    if (this.state.running) {
       this.countUp()
     }
   }
@@ -74,7 +75,7 @@ export class Stopwatch extends React.Component {
   keyPress (e) {
     if (e.keyCode !== 32 && e.keyCode !== 13) { return }
 
-    if (this.state.countingUp) {
+    if (this.state.running) {
       this.stopStopwatch()
       return
     }
@@ -94,18 +95,18 @@ export class Stopwatch extends React.Component {
     return (
       <div className="stopwatch">
         <div className="stopwatchTime" style={{ fontSize: '2em' }}>
-          {this.state.displayTime}
+          {this.createDisplayTime()}
         </div>
         {
-          !this.state.countingUp && (
+          !this.state.running && (
             <span>
-              <button onClick={this.startStopwatch} className="startButton">Start</button>
+              <button className="startButton" onClick={this.startStopwatch}>Start</button>
               <button className="clearButton" onClick={this.clearStopwatch}>Clear</button>
             </span>
           )
         }
         {
-          this.state.countingUp && (
+          this.state.running && (
             <button className="pauseButton" onClick={this.stopStopwatch}>Pause</button>
           )
         }

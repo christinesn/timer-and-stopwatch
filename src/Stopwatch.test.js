@@ -24,16 +24,37 @@ describe('Stopwatch', () => {
     beforeAll(() => {
       sandbox = sinon.createSandbox()
       sandbox.stub(Stopwatch.prototype, 'componentDidUpdate')
+      sandbox.stub(Date, 'now').returns(new Date("2019-01-01T06:30:00.000Z"))
     })
 
     afterAll(() => {
       sandbox.restore()
     })
 
-    it('Sets the countingUp state to true', () => {
+    it('Sets the running state to true', () => {
       const wrapper = shallow(<Stopwatch />)
       wrapper.instance().startStopwatch()
-      expect(wrapper.state().countingUp).toEqual(true)
+      expect(wrapper.state().running).toEqual(true)
+    })
+
+    describe('If the stopwatch is starting fresh', () => {
+      it('Sets the startTime to the current time', () => {
+        const wrapper = shallow(<Stopwatch />)
+        wrapper.instance().startStopwatch()
+
+        expect(wrapper.state().startTime).toEqual(new Date("2019-01-01T06:30:00.000Z"))
+      })
+    })
+
+    describe('If the stopwatch was paused and is resuming', () => {
+      it('Sets startTime so that the stopwatch can resume correctly', () => {
+        const wrapper = shallow(<Stopwatch />)
+
+        wrapper.setState({ startTime: new Date("2019-01-01T06:20:00.000Z"), time: 1000 })
+        wrapper.instance().startStopwatch()
+
+        expect(wrapper.state().startTime).toEqual(new Date("2019-01-01T06:29:59.000Z"))
+      })
     })
   })
 
@@ -41,56 +62,43 @@ describe('Stopwatch', () => {
     beforeAll(() => {
       sandbox = sinon.createSandbox()
       sandbox.stub(Stopwatch.prototype, 'componentDidUpdate')
-      sandbox.stub(Stopwatch.prototype, 'createDisplayTime').returns("00:00:01")
-    })
-
-    afterEach(() => {
-      sandbox.resetHistory()
+      sandbox.stub(Date, 'now').returns(new Date("2019-01-01T06:30:00.000Z"))
     })
 
     afterAll(() => {
       sandbox.restore()
     })
 
-    describe('If the stopwatch is currently counting up', () => {
-      it('Waits a second, then increments the time', () => {
-        const wrapper = shallow(<Stopwatch />)
-        wrapper.setState({ ...wrapper.state(), countingUp: true })
+    it('Waits 10 ms, then updates the elapsed time', () => {
+      const wrapper = shallow(<Stopwatch />)
 
-        wrapper.instance().countUp()
-
-        jest.runAllTimers()
-
-        expect(wrapper.state().timeInSeconds).toEqual(1)
-        expect(wrapper.state().displayTime).toEqual("00:00:01")
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000)
+      wrapper.setState({
+        ...wrapper.state(),
+        startTime: new Date("2019-01-01T06:29:00.000Z")
       })
-    })
 
-    describe('If the stopwatch is not currently counting up (because it has been paused, etc.)', () => {
-      it('Does not increment the time at the end of the second', () => {
-        const wrapper = shallow(<Stopwatch />)
-        wrapper.setState({ countingUp: false })
+      wrapper.instance().countUp()
 
-        wrapper.instance().countUp()
+      jest.runAllTimers()
 
-        jest.runAllTimers()
-
-        expect(wrapper.state().timeInSeconds).toEqual(0)
-        expect(wrapper.state().displayTime).toEqual("00:00:00")
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000)
-      })
+      expect(wrapper.state().time).toEqual(60000)
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 10)
+      expect(wrapper.instance().timer).not.toEqual(null)
     })
   })
 
   describe('createDisplayTime()', () => {
-    it('Takes the new time in seconds and returns a display time', () => {
+    it('Takes the current elapsed time and creates a display time', () => {
       const wrapper = shallow(<Stopwatch />)
 
-      expect(wrapper.instance().createDisplayTime(3600)).toEqual("01:00:00")
-      expect(wrapper.instance().createDisplayTime(119)).toEqual("00:01:59")
-      expect(wrapper.instance().createDisplayTime(215999)).toEqual("59:59:59")
-      expect(wrapper.instance().createDisplayTime(1)).toEqual("00:00:01")
+      wrapper.setState({ time: 36000 })
+      expect(wrapper.instance().createDisplayTime()).toEqual("00:00:36")
+
+      wrapper.setState({ time: 120000 })
+      expect(wrapper.instance().createDisplayTime()).toEqual("00:02:00")
+
+      wrapper.setState({ time: 5160000 })
+      expect(wrapper.instance().createDisplayTime()).toEqual("01:26:00")
     })
   })
 
@@ -104,26 +112,27 @@ describe('Stopwatch', () => {
       sandbox.restore()
     })
 
-    it('Sets the countingUp state to false', () => {
+    it('Sets the running state to false and clears any current timeouts', () => {
       const wrapper = shallow(<Stopwatch />)
-      wrapper.setState({ countingUp: true })
+      wrapper.setState({ running: true })
       wrapper.instance().stopStopwatch()
-      expect(wrapper.state().countingUp).toEqual(false)
+      expect(wrapper.state().running).toEqual(false)
+      expect(clearTimeout).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('clearStopwatch()', () => {
-    it('Sets the stored time back to 0', () => {
+    it('Clears the startTime and the elapsed time', () => {
       const wrapper = shallow(<Stopwatch />)
       wrapper.setState({
-        timeInSeconds: 10,
-        displayTime: "01:01:01"
+        time: 1000,
+        startTime: Date.now()
       })
 
       wrapper.instance().clearStopwatch()
 
-      expect(wrapper.state().timeInSeconds).toEqual(0)
-      expect(wrapper.state().displayTime).toEqual("00:00:00")
+      expect(wrapper.state().startTime).toEqual(null)
+      expect(wrapper.state().time).toEqual(0)
     })
   })
 
@@ -141,10 +150,10 @@ describe('Stopwatch', () => {
       sandbox.restore()
     })
 
-    describe('If the stopwatch is counting up', () => {
+    describe('If the stopwatch is running', () => {
       it('Continues counting up', () => {
         const wrapper = shallow(<Stopwatch />)
-        wrapper.setState({ countingUp: true })
+        wrapper.setState({ running: true })
         wrapper.instance().componentDidUpdate()
         expect(wrapper.instance().countUp.called).toEqual(true)
       })
@@ -153,7 +162,7 @@ describe('Stopwatch', () => {
     describe('If the stopwatch is stopped', () => {
       it('Does nothing', () => {
         const wrapper = shallow(<Stopwatch />)
-        wrapper.setState({ countingUp: false })
+        wrapper.setState({ running: false })
         wrapper.instance().componentDidUpdate()
         expect(wrapper.instance().countUp.called).toEqual(false)
       })
@@ -205,7 +214,7 @@ describe('Stopwatch', () => {
     describe('When space or enter is pressed while the stopwatch is running', () => {
       it('Stops the stopwatch', () => {
         const wrapper = shallow(<Stopwatch />)
-        wrapper.setState({ countingUp: true })
+        wrapper.setState({ running: true })
 
         wrapper.instance().keyPress({ keyCode: 32 })
         sandbox.assert.calledOnce(Stopwatch.prototype.stopStopwatch)
@@ -262,7 +271,7 @@ describe('Stopwatch', () => {
     describe('When the stopwatch is running', () => {
       it('Renders the pause button only', () => {
         const wrapper = shallow(<Stopwatch />)
-        wrapper.setState({ countingUp: true })
+        wrapper.setState({ running: true })
 
         expect(wrapper.exists('.startButton')).toEqual(false)
         expect(wrapper.exists('.clearButton')).toEqual(false)
