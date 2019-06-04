@@ -11,6 +11,8 @@ export class Timer extends React.Component {
       alarmPlaying: false
     }
 
+    this.timer = null
+
     this.alarm = new Audio()
     this.alarm.src = "alarm.mp3"
     this.alarm.loop = true
@@ -55,20 +57,16 @@ export class Timer extends React.Component {
       ...this.state,
       countingDown: false
     })
+
+    clearTimeout(this.timer)
   }
 
   countDown () {
-    setTimeout(() => {
-      /**
-       * Check should be inside the timeout,
-       * in case the timer is paused mid-second.
-       */
-      if (this.state.countingDown) {
-        this.setState({
-          ...this.state,
-          time: this.decrementTime()
-        })
-      }
+    this.timer = setTimeout(() => {
+      this.setState({
+        ...this.state,
+        time: this.decrementTime()
+      })
     }, 1000)
   }
 
@@ -127,6 +125,7 @@ export class Timer extends React.Component {
         alarmPlaying: true,
         countingDown: false
       })
+      clearTimeout(this.timer)
     }
   }
 

@@ -99,6 +99,13 @@ describe('Timer', () => {
       wrapper.instance().pauseTimer()
       expect(wrapper.state().countingDown).toEqual(false)
     })
+
+    it('Clears any ongoing countdown intervals', () => {
+      const wrapper = shallow(<Timer />)
+      wrapper.instance().pauseTimer()
+
+      expect(clearTimeout).toHaveBeenCalled()
+    })
   })
 
   describe('countDown()', () => {
@@ -112,29 +119,15 @@ describe('Timer', () => {
       sandbox.restore()
     })
 
-    describe('If the timer is still counting down', () => {
-      it('Waits one second, then calls decrementTime()', () => {
-        const wrapper = shallow(<Timer />)
-        wrapper.setState({ countingDown: true })
-        wrapper.instance().countDown()
+    it('Waits one second, then calls decrementTime()', () => {
+      const wrapper = shallow(<Timer />)
+      wrapper.setState({ countingDown: true })
+      wrapper.instance().countDown()
 
-        jest.runAllTimers()
+      jest.runAllTimers()
 
-        expect(wrapper.state().time).toEqual('newTime')
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000)
-      })
-    })
-
-    describe('If the timer is not counting down (i.e., it has been paused)', () => {
-      it('Does not decrement time at the end of the timeout', () => {
-        const wrapper = shallow(<Timer />)
-        
-        wrapper.instance().countDown()
-        jest.runAllTimers()
-
-        expect(wrapper.state().time).toEqual("00:00:00")
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000)
-      })
+      expect(wrapper.state().time).toEqual('newTime')
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000)
     })
   })
 
@@ -222,6 +215,14 @@ describe('Timer', () => {
         expect(wrapper.state().countingDown).toEqual(false)
         expect(window.HTMLMediaElement.prototype.play.callCount).toEqual(1)
         sandbox.assert.notCalled(Timer.prototype.countDown)
+      })
+
+      it('Clears any ongoing countdown intervals', () => {
+        const wrapper = shallow(<Timer />)
+
+        wrapper.setState({ countingDown: true, time: "00:00:00" })
+
+        expect(clearTimeout).toHaveBeenCalled()
       })
     })
   })
