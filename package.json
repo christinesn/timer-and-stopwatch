@@ -18,6 +18,9 @@
     "coverage": "react-scripts test --coverage --env=jsdom",
     "eject": "react-scripts eject"
   },
+  "prettier": {
+    "printWidth": 90
+  },
   "eslintConfig": {
     "extends": "react-app"
   },
