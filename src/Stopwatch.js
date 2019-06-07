@@ -73,7 +73,7 @@ export class Stopwatch extends React.Component {
   }
 
   keyPress (e) {
-    if (e.keyCode !== 32 && e.keyCode !== 13) { return }
+    if (e.keyCode !== 32) { return }
 
     if (this.state.running) {
       this.stopStopwatch()
@@ -94,22 +94,47 @@ export class Stopwatch extends React.Component {
   render() {
     return (
       <div className="stopwatch">
-        <div className="stopwatchTime" style={{ fontSize: '2em' }}>
+        <div className="time-labels">
+          hours : minutes : seconds
+        </div>
+        <div id="stopwatch-time" aria-live={this.state.running ? 'polite' : 'off'} aria-atomic="true">
           {this.createDisplayTime()}
         </div>
-        {
-          !this.state.running && (
-            <span>
-              <button className="startButton" onClick={this.startStopwatch}>Start</button>
-              <button className="clearButton" onClick={this.clearStopwatch}>Clear</button>
-            </span>
-          )
-        }
-        {
-          this.state.running && (
-            <button className="pauseButton" onClick={this.stopStopwatch}>Pause</button>
-          )
-        }
+        <div className="controls">
+          {
+            !this.state.running && (
+                <button
+                  className="control-button start-button"
+                  onClick={this.startStopwatch}
+                  aria-controls="stopwatch-time"
+                >
+                  start
+                </button>
+            )
+          }
+          {
+            !this.state.running && (
+                <button
+                  className="control-button clear-button"
+                  onClick={this.clearStopwatch}
+                  aria-controls="stopwatch-time"
+                >
+                  clear
+                </button>
+            )
+          }
+          {
+            this.state.running && (
+              <button
+                className="control-button pause-button"
+                onClick={this.stopStopwatch}
+                aria-controls="stopwatch-time"
+              >
+                pause
+              </button>
+            )
+          }
+        </div>
       </div>
     )
   }

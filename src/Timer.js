@@ -1,5 +1,6 @@
 import React from 'react'
 import InputMask from 'react-input-mask'
+import classNames from 'classnames'
 
 export class Timer extends React.Component {
   constructor (props) {
@@ -155,8 +156,8 @@ export class Timer extends React.Component {
 
   render () {
     return (
-      <form onSubmit={this.startTimer} className="timerForm">
-        <div>hours : minutes : seconds</div>
+      <form onSubmit={this.startTimer} className="timer-form">
+        <div className="time-labels">hours : minutes : seconds</div>
         <InputMask
           formatChars={{
             '9': '[0-9]',
@@ -167,21 +168,29 @@ export class Timer extends React.Component {
           value={this.state.time}
           onChange={this.handleChange}
           alwaysShowMask={true}
-          style={{
-            fontSize: '2em'
-          }}
           disabled={this.state.countingDown || this.state.alarmPlaying}
-          className="timeInput"
+          className={classNames({ 'alarm-playing': this.state.alarmPlaying })}
+          aria-live={this.state.countingDown ? 'polite' : 'off'}
+          aria-atomic="true"
+          id="timer-time"
         />
-
-        <div>
+        <div
+          className={classNames(
+            "timer-instructions",
+            { hide: this.state.countingDown || this.state.alarmPlaying }
+          )}
+          aria-hidden={ this.state.countingDown || this.state.alarmPlaying }
+        >
+          type in a time, then press start
+        </div>
+        <div className="controls">
           {
             !this.state.countingDown && !this.state.alarmPlaying && (
               <span>
-                <button type="submit" className="startButton">
+                <button type="submit" className="control-button start-button" aria-controls="timer-time">
                   Start
                 </button>
-                <button type="button" onClick={this.clearInput} className="clearButton">
+                <button type="button" onClick={this.clearInput} className="control-button clear-button" aria-controls="timer-time">
                   Clear
                 </button>
               </span>
@@ -189,14 +198,14 @@ export class Timer extends React.Component {
           }
           {
             this.state.countingDown && !this.state.alarmPlaying && (
-              <button onClick={this.pauseTimer} className="pauseButton">
+              <button onClick={this.pauseTimer} className="control-button pause-button" aria-controls="timer-time">
                 Pause
               </button>
             )
           }
           {
             this.state.alarmPlaying && (
-              <button onClick={this.stopAlarm} className="stopButton">
+              <button onClick={this.stopAlarm} className="control-button stop-button" aria-controls="timer-time">
                 Stop
               </button>
             )

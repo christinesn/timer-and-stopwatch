@@ -2,6 +2,7 @@ import React from 'react'
 import {Timer} from './Timer'
 import {shallow} from 'enzyme'
 import sinon from 'sinon'
+import InputMask from 'react-input-mask'
 
 jest.useFakeTimers()
 let sandbox
@@ -333,11 +334,11 @@ describe('Timer', () => {
       it('Renders only the start button and the clear input button', () => {
         const wrapper = shallow(<Timer />)
         
-        expect(wrapper.exists('.startButton')).toEqual(true)
-        expect(wrapper.exists('.clearButton')).toEqual(true)
+        expect(wrapper.exists('.start-button')).toEqual(true)
+        expect(wrapper.exists('.clear-button')).toEqual(true)
 
-        expect(wrapper.exists('.pauseButton')).toEqual(false)
-        expect(wrapper.exists('.stopButton')).toEqual(false)
+        expect(wrapper.exists('.pause-button')).toEqual(false)
+        expect(wrapper.exists('.stop-button')).toEqual(false)
       })
     })
 
@@ -346,11 +347,11 @@ describe('Timer', () => {
         const wrapper = shallow(<Timer />)
         wrapper.setState({ countingDown: true, alarmPlaying: false })
 
-        expect(wrapper.exists('.pauseButton')).toEqual(true)
+        expect(wrapper.exists('.pause-button')).toEqual(true)
         
-        expect(wrapper.exists('.startButton')).toEqual(false)
-        expect(wrapper.exists('.clearButton')).toEqual(false)
-        expect(wrapper.exists('.stopButton')).toEqual(false)
+        expect(wrapper.exists('.start-button')).toEqual(false)
+        expect(wrapper.exists('.clear-button')).toEqual(false)
+        expect(wrapper.exists('.stop-button')).toEqual(false)
       })
     })
 
@@ -359,11 +360,88 @@ describe('Timer', () => {
         const wrapper = shallow(<Timer />)
         wrapper.setState({ countingDown: true, alarmPlaying: true })
 
-        expect(wrapper.exists('.stopButton')).toEqual(true)
+        expect(wrapper.exists('.stop-button')).toEqual(true)
         
-        expect(wrapper.exists('.pauseButton')).toEqual(false)
-        expect(wrapper.exists('.startButton')).toEqual(false)
-        expect(wrapper.exists('.clearButton')).toEqual(false)
+        expect(wrapper.exists('.pause-button')).toEqual(false)
+        expect(wrapper.exists('.start-button')).toEqual(false)
+        expect(wrapper.exists('.clear-button')).toEqual(false)
+      })
+    })
+  })
+
+  describe('Timer instructions', () => {
+    beforeAll(() => {
+      sandbox = sinon.createSandbox()
+      sandbox.stub(Timer.prototype, 'componentDidUpdate')
+    })
+
+    afterAll(() => {
+      sandbox.restore()
+    })
+
+    describe('When the timer is stopped', () => {
+      it('Shows the instructions', () => {
+        const wrapper = shallow(<Timer />)
+        wrapper.setState({ countingDown: false })
+
+        expect(wrapper.find('.timer-instructions').hasClass('hide')).toEqual(false)
+        expect(wrapper.find('.timer-instructions').prop('aria-hidden')).toEqual(false)
+      })
+    })
+
+    describe('When the timer is running', () => {
+      it("Doesn't show the instructions", () => {
+        const wrapper = shallow(<Timer />)
+        wrapper.setState({ countingDown: true })
+
+        expect(wrapper.find('.timer-instructions').hasClass('hide')).toEqual(true)
+        expect(wrapper.find('.timer-instructions').prop('aria-hidden')).toEqual(true)
+      })
+    })
+
+    describe('When the alarm is playing', () => {
+      it("Doesn't show the instructions", () => {
+        const wrapper = shallow(<Timer />)
+        wrapper.setState({ countingDown: false, alarmPlaying: true })
+
+        expect(wrapper.find('.timer-instructions').hasClass('hide')).toEqual(true)
+        expect(wrapper.find('.timer-instructions').prop('aria-hidden')).toEqual(true)
+      })
+    })
+  })
+
+  describe('Time input field', () => {
+    beforeAll(() => {
+      sandbox = sinon.createSandbox()
+      sandbox.stub(Timer.prototype, 'componentDidUpdate')
+    })
+
+    afterAll(() => {
+      sandbox.restore()
+    })
+
+    describe('When the timer is running, or the alarm is playing', () => {
+      it('Disables the time input field', () => {
+        const wrapper = shallow(<Timer />)
+        wrapper.setState({ countingDown: false, alarmPlaying: true })
+
+        expect(wrapper.find(InputMask).prop('disabled')).toEqual(true)
+      })
+    })
+
+    describe('When the timer is running', () => {
+      it('Adds an aria-live attribute to the time input', () => {
+        const wrapper = shallow(<Timer />)
+        wrapper.setState({ countingDown: true })
+        expect(wrapper.find(InputMask).prop('aria-live')).toEqual('polite')
+      })
+    })
+
+    describe('When the alarm is playing', () => {
+      it('Adds an alarm-playing class to the time input field', () => {
+        const wrapper = shallow(<Timer />)
+        wrapper.setState({ alarmPlaying: true })
+        expect(wrapper.find(InputMask).hasClass('alarm-playing')).toEqual(true)
       })
     })
   })

@@ -12,23 +12,37 @@ describe('App', () => {
     ReactDOM.unmountComponentAtNode(div);
   });
 
-  describe('Timer and stopwatch rendering', () => {
-    describe('When the timer tab is selected', () => {
-      it("Doesn't render the stopwatch component at all", () => {
+  describe('Timer and stopwatch switching', () => {
+    describe('When the timer button is clicked', () => {
+      it('Switches to the timer component', () => {
         const wrapper = shallow(<App />)
+        wrapper.setState({ selected: 'stopwatch '})
+        wrapper.find('.timer-selector').simulate('click')
 
-        wrapper.setState({ key: 'timer' })
+        expect(wrapper.state().selected).toEqual('timer')
+
+        expect(wrapper.find('.timer-selector').prop('disabled')).toEqual(true)
+        expect(wrapper.find('.timer-selector').hasClass('active')).toEqual(true)
+        expect(wrapper.find('.stopwatch-selector').prop('disabled')).toEqual(false)
+        expect(wrapper.find('.stopwatch-selector').hasClass('active')).toEqual(false)
 
         expect(wrapper.exists(Timer)).toEqual(true)
         expect(wrapper.exists(Stopwatch)).toEqual(false)
       })
     })
 
-    describe('When the stopwatch tab is selected', () => {
-      it("Doesn't render the timer component at all", () => {
+    describe('When the stopwatch button is clicked', () => {
+      it('Switches to the stopwatch component', () => {
         const wrapper = shallow(<App />)
+        wrapper.setState({ selected: 'timer '})
+        wrapper.find('.stopwatch-selector').simulate('click')
 
-        wrapper.setState({ key: 'stopwatch' })
+        expect(wrapper.state().selected).toEqual('stopwatch')
+
+        expect(wrapper.find('.timer-selector').prop('disabled')).toEqual(false)
+        expect(wrapper.find('.timer-selector').hasClass('active')).toEqual(false)
+        expect(wrapper.find('.stopwatch-selector').prop('disabled')).toEqual(true)
+        expect(wrapper.find('.stopwatch-selector').hasClass('active')).toEqual(true)
 
         expect(wrapper.exists(Timer)).toEqual(false)
         expect(wrapper.exists(Stopwatch)).toEqual(true)

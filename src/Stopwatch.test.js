@@ -185,7 +185,7 @@ describe('Stopwatch', () => {
       sandbox.restore()
     })
 
-    describe('When a key other than space or enter is pressed', () => {
+    describe('When a key other than space is pressed', () => {
       it('Does nothing', () => {
         const wrapper = shallow(<Stopwatch />)
         wrapper.instance().keyPress({ keyCode: 1 })
@@ -195,34 +195,22 @@ describe('Stopwatch', () => {
       })
     })
 
-    describe('When space or enter is pressed while the stopwatch is stopped', () => {
+    describe('When space is pressed while the stopwatch is stopped', () => {
       it('Starts the stopwatch', () => {
         const wrapper = shallow(<Stopwatch />)
 
         wrapper.instance().keyPress({ keyCode: 32 })
         sandbox.assert.notCalled(Stopwatch.prototype.stopStopwatch)
         sandbox.assert.calledOnce(Stopwatch.prototype.startStopwatch)
-
-        sandbox.resetHistory()
-
-        wrapper.instance().keyPress({ keyCode: 13 })
-        sandbox.assert.notCalled(Stopwatch.prototype.stopStopwatch)
-        sandbox.assert.calledOnce(Stopwatch.prototype.startStopwatch)
       })
     })
 
-    describe('When space or enter is pressed while the stopwatch is running', () => {
+    describe('When space is pressed while the stopwatch is running', () => {
       it('Stops the stopwatch', () => {
         const wrapper = shallow(<Stopwatch />)
         wrapper.setState({ running: true })
 
         wrapper.instance().keyPress({ keyCode: 32 })
-        sandbox.assert.calledOnce(Stopwatch.prototype.stopStopwatch)
-        sandbox.assert.notCalled(Stopwatch.prototype.startStopwatch)
-
-        sandbox.resetHistory()
-
-        wrapper.instance().keyPress({ keyCode: 13 })
         sandbox.assert.calledOnce(Stopwatch.prototype.stopStopwatch)
         sandbox.assert.notCalled(Stopwatch.prototype.startStopwatch)
       })
@@ -262,9 +250,9 @@ describe('Stopwatch', () => {
       it('Renders only the start button and the clear button', () => {
         const wrapper = shallow(<Stopwatch />)
 
-        expect(wrapper.exists('.startButton')).toEqual(true)
-        expect(wrapper.exists('.clearButton')).toEqual(true)
-        expect(wrapper.exists('.pauseButton')).toEqual(false)
+        expect(wrapper.exists('.start-button')).toEqual(true)
+        expect(wrapper.exists('.clear-button')).toEqual(true)
+        expect(wrapper.exists('.pause-button')).toEqual(false)
       })
     })
 
@@ -273,9 +261,38 @@ describe('Stopwatch', () => {
         const wrapper = shallow(<Stopwatch />)
         wrapper.setState({ running: true })
 
-        expect(wrapper.exists('.startButton')).toEqual(false)
-        expect(wrapper.exists('.clearButton')).toEqual(false)
-        expect(wrapper.exists('.pauseButton')).toEqual(true)
+        expect(wrapper.exists('.start-button')).toEqual(false)
+        expect(wrapper.exists('.clear-button')).toEqual(false)
+        expect(wrapper.exists('.pause-button')).toEqual(true)
+      })
+    })
+  })
+
+  describe('Clock aria attributes', () => {
+    beforeAll(() => {
+      sandbox = sinon.createSandbox()
+      sandbox.stub(Stopwatch.prototype, 'componentDidUpdate')
+    })
+
+    afterAll(() => {
+      sandbox.restore()
+    })
+
+    describe('When the stopwatch is running', () => {
+      it('Sets the aria-live attribute to polite', () => {
+        const wrapper = shallow(<Stopwatch />)
+        wrapper.setState({ running: true })
+
+        expect(wrapper.find('#stopwatch-time').prop('aria-live')).toEqual('polite')
+      })
+    })
+
+    describe("When the stopwatch isn't running", () => {
+      it('Sets the aria-live attribute to off', () => {
+        const wrapper = shallow(<Stopwatch />)
+        wrapper.setState({ running: false })
+
+        expect(wrapper.find('#stopwatch-time').prop('aria-live')).toEqual('off')
       })
     })
   })

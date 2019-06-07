@@ -1,0 +1,144 @@
+html {
+  height: 100%;
+  background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+body {
+  background: none;
+  height: 100%;
+  font-family: 'Roboto Condensed' !important;
+}
+
+a {
+  color: rgb(235, 206, 224);
+  text-decoration: none;
+}
+
+a:hover, a:active, a:focus {
+  color: rgb(233, 148, 148);
+  text-decoration: none;
+}
+
+.selector {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.8em;
+  border-radius: 20px !important;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 3px solid transparent !important;
+  margin: auto;
+  margin-bottom: 1em !important;
+  width: 40%;
+  text-align: center;
+  color: white !important;
+  padding: 0.5em;
+}
+
+.selector:hover, .selector:active, .selector:focus {
+  background: rgba(255, 255, 255, 0.4) !important;
+  color: white !important;
+}
+
+.selector.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+.clocks {
+  margin-top: 1.5em;
+  text-align: center;
+}
+
+#stopwatch-time {
+  font-family: 'Roboto Mono' !important;
+  font-size: 3em;
+  color: rgba(0, 0, 0, 0.75);
+  margin-top: -0.2em;
+}
+
+#timer-time {
+  font-family: 'Roboto Mono' !important;
+  font-size: 3em;
+  text-align: center;
+  background: none;
+  border: none;
+  color: rgba(0, 0, 0, 0.75);
+  padding: 0;
+  margin-top: 0.05em;
+  height: 1em;
+  width: 100%;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0.75;
+  }
+}
+
+.alarm-playing {
+  animation: blinker 1s step-start infinite;
+}
+
+.timer-instructions {
+  font-family: 'Roboto Mono' !important;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: bold;
+  font-size: 0.7em;
+  margin-top: 0.5em;
+  padding-left: 0.7em;
+}
+
+.timer-instructions.hide {
+  opacity: 0;
+}
+
+.time-labels {
+  font-family: 'Roboto Mono' !important;
+  font-size: 0.6em;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: bold;
+  letter-spacing: 2px;
+  padding-left: 2.1em;
+}
+
+.controls {
+  margin-top: 1.5em;
+}
+
+.control-button {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  border: none;
+  padding: 0.25em 1em 0.35em 1em;
+  border-radius: 20px;
+  font-size: 0.95em;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  text-transform: lowercase;
+}
+
+.control-button:hover, .control-button:active, .control-button:focus {
+  background-color: rgba(233, 25, 25, 0.5);
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  font-size: 0.7em;
+  color: white !important;
+  text-align: right;
+  padding: 0.5em 1em;
+}
+
+.links-and-credits {
+  float: left;
+}
+
+.tip {
+  display: inline-block;
+}
