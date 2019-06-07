@@ -58,7 +58,7 @@ class App extends React.Component {
             >
               github
             </a>
-            &nbsp;&nbsp;✨ alarm mp3 from
+            &nbsp;&nbsp;✨ alarm mp3 from&nbsp;
             <a
               href="http://www.orangefreesounds.com/wecker-sound/"
               target="_blank"

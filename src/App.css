@@ -9,6 +9,7 @@ body {
   background: none;
   height: 100%;
   font-family: 'Roboto Condensed' !important;
+  font-size: 1.25em;
 }
 
 a {

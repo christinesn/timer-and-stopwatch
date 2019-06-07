@@ -1,5 +1,6 @@
 {
   "name": "timer-and-stopwatch",
+  "homepage": "https://christinesn.github.io/timer-and-stopwatch",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -16,7 +17,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "coverage": "react-scripts test --coverage --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "prettier": {
     "printWidth": 90
@@ -39,6 +42,7 @@
   "devDependencies": {
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.13.2",
+    "gh-pages": "^2.0.1",
     "prettier": "^1.17.1",
     "prop-types": "^15.7.2",
     "sinon": "^7.3.2"
