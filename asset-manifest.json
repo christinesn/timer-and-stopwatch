@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/timer-and-stopwatch/static/css/main.e155175a.chunk.css",
+    "main.js": "/timer-and-stopwatch/static/js/main.891d1417.chunk.js",
+    "main.js.map": "/timer-and-stopwatch/static/js/main.891d1417.chunk.js.map",
+    "runtime~main.js": "/timer-and-stopwatch/static/js/runtime~main.f936d538.js",
+    "runtime~main.js.map": "/timer-and-stopwatch/static/js/runtime~main.f936d538.js.map",
+    "static/js/2.968b6be4.chunk.js": "/timer-and-stopwatch/static/js/2.968b6be4.chunk.js",
+    "static/js/2.968b6be4.chunk.js.map": "/timer-and-stopwatch/static/js/2.968b6be4.chunk.js.map",
+    "index.html": "/timer-and-stopwatch/index.html",
+    "precache-manifest.1a3e75c5993e689df1a980519353328c.js": "/timer-and-stopwatch/precache-manifest.1a3e75c5993e689df1a980519353328c.js",
+    "service-worker.js": "/timer-and-stopwatch/service-worker.js",
+    "static/css/main.e155175a.chunk.css.map": "/timer-and-stopwatch/static/css/main.e155175a.chunk.css.map"
+  }
+}
